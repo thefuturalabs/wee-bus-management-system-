@@ -13,6 +13,7 @@ class BusStatusScreen extends StatefulWidget {
 
 class _BusStatusScreenState extends State<BusStatusScreen> {
   String? issue;
+  bool start = false;
 
   reportIssue(String issue) async {
     String uid = await Services.getUserId() ?? '2';
@@ -28,21 +29,48 @@ class _BusStatusScreenState extends State<BusStatusScreen> {
   getCurrentIssue() async {
     String uid = await Services.getUserId() ?? '2';
     final data = await Services.postData({
-      'driver_id': uid,
+      'bus_id': widget.busId,
     }, 'view_issue.php');
     setState(() {
-      issue = data[0]['issue'];
+      issue = data.last['issue'];
     });
   }
 
   updateLocation() async {
     String uid = await Services.getUserId() ?? '2';
-    Location().onLocationChanged.listen((event) {
-      Services.postData({
-        'bus_id': widget.busId,
-        'location': '${event.latitude},${event.longitude}',
-      }, 'update_bus_location.php');
-    });
+    if (start) {
+      Location().onLocationChanged.listen((event) {
+        Services.postData({
+          'bus_id': widget.busId,
+          'location': '${event.latitude},${event.longitude}',
+          'driver_id': uid,
+        }, 'location_update.php');
+      });
+    }
+  }
+
+  stopBus() async {
+    start = false;
+    String uid = await Services.getUserId() ?? '2';
+    LocationData loc = await Location().getLocation();
+    Services.postData({
+      'bus_id': widget.busId,
+      'location': '${loc.latitude},${loc.longitude}',
+      'driver_id': uid,
+    }, 'stop_bus.php');
+  }
+
+  startBus() async {
+    start = true;
+    String uid = await Services.getUserId() ?? '2';
+    LocationData loc = await Location().getLocation();
+    Services.postData({
+      'bus_id': widget.busId,
+      'location': '${loc.latitude},${loc.longitude}',
+      'driver_id': uid,
+    }, 'start_bus.php');
+
+    updateLocation();
   }
 
   @override
@@ -69,7 +97,7 @@ class _BusStatusScreenState extends State<BusStatusScreen> {
                     color: issue == 'start' ? Colors.white : Colors.transparent,
                     child: MaterialButton(
                         color: Colors.green,
-                        onPressed: () {},
+                        onPressed: startBus,
                         child: SizedBox(
                             height: 100, child: Center(child: Text('START')))),
                   ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wee/Services/services.dart';
-import 'package:wee/constants.dart';
 import 'package:wee/screens/driver/driver_homepage.dart';
 import 'package:wee/screens/driver/driver_registration.dart';
 import 'package:wee/screens/facility/facility_registration.dart';
@@ -9,6 +8,7 @@ import 'package:wee/screens/facility/facility_homepage.dart';
 import 'package:wee/screens/rto/rto_homepage.dart';
 import 'package:wee/screens/rto/rto_registration_page.dart';
 import 'package:wee/screens/user/user_home_page.dart';
+import 'package:wee/screens/user/user_registration_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -48,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => RtoRegistraionPage(),
+                          builder: (_) => UserRegistraionPage(),
                         ),
                       );
                     },
@@ -104,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
       final spref = await SharedPreferences.getInstance();
       spref.setString('userId', data['rto_id']);
       spref.setString('type', data['type']);
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (_) => RtoHomepage(),
@@ -119,7 +119,7 @@ class _LoginPageState extends State<LoginPage> {
         final spref = await SharedPreferences.getInstance();
         spref.setString('userId', data['fecility_id']);
         spref.setString('type', 'facility');
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (_) => FacilityHomepage(),
@@ -149,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
           final spref = await SharedPreferences.getInstance();
           spref.setString('userId', data['user_id']);
           spref.setString('type', 'user');
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (_) => UserHomePage(),

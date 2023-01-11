@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:location/location.dart';
 import 'package:wee/Services/services.dart';
-import 'package:wee/constants.dart';
+import 'package:wee/screens/bus_view.dart';
+import 'package:wee/screens/user/nearby_facility_screen.dart';
+import 'package:wee/widgets/user_drawer.dart';
 
 class UserHomePage extends StatefulWidget {
   UserHomePage({super.key});
@@ -42,12 +44,22 @@ class _UserHomePageState extends State<UserHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: UserDrawer(),
+      appBar: AppBar(title: Text('Wee')),
       floatingActionButton: Row(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          FloatingActionButton(onPressed: (){},child: Icon(Icons.wc),),
-          SizedBox(width: 10,),
+          FloatingActionButton(
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => NearbyFaciliyScreen()));
+            },
+            child: Icon(Icons.wc),
+          ),
+          SizedBox(
+            width: 10,
+          ),
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -55,27 +67,26 @@ class _UserHomePageState extends State<UserHomePage> {
                   onPressed: () {
                     showDialog(
                       context: context,
-                      builder: (_) => StatefulBuilder(
-                        builder: (context,state) {
-                          return AlertDialog(
-                            title: Text('location accuracy'),
-                            content: SizedBox(
-                              height: 30,
-                              child: Slider(
+                      builder: (_) =>
+                          StatefulBuilder(builder: (context, state) {
+                        return AlertDialog(
+                          title: Text('location accuracy'),
+                          content: SizedBox(
+                            height: 30,
+                            child: Slider(
                                 divisions: 4,
                                 label: '$accuracy',
                                 min: 1,
                                 max: 5,
-                                  value: accuracy.ceilToDouble(),
-                                  onChanged: (v) {
-                                    state(() {
-                                      accuracy = v.toInt();
-                                    });
-                                  }),
-                            ),
-                          );
-                        }
-                      ),
+                                value: accuracy.ceilToDouble(),
+                                onChanged: (v) {
+                                  state(() {
+                                    accuracy = v.toInt();
+                                  });
+                                }),
+                          ),
+                        );
+                      }),
                     );
                   },
                   child: Icon(Icons.more_vert)),
@@ -84,10 +95,12 @@ class _UserHomePageState extends State<UserHomePage> {
               ),
               FloatingActionButton(
                   onPressed: () {
-                    if (searchInstead) {
-                      searchBus();
-                    } else {
-                      filterBuses();
+                    if (fkey.currentState!.validate()) {
+                      if (searchInstead) {
+                        searchBus();
+                      } else {
+                        filterBuses();
+                      }
                     }
                   },
                   child: Icon(Icons.search)),
@@ -173,15 +186,27 @@ class _UserHomePageState extends State<UserHomePage> {
                       )
                     ],
                   ),
-            TextButton(
-                onPressed: () {
-                  setState(() {
-                    searchInstead = !searchInstead;
-                  });
-                },
-                child: Text(searchInstead
-                    ? 'search by departure and arrival'
-                    : 'search by bus name instead')),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                    onPressed: () {
+                      setState(() {
+                        searchInstead = !searchInstead;
+                      });
+                    },
+                    child: Text(searchInstead
+                        ? 'search by departure and arrival'
+                        : 'search by bus name instead')),
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        filteredBuses = allBuses;
+                      });
+                    },
+                    icon: Icon(Icons.restart_alt))
+              ],
+            ),
             Divider(),
             fetchingBuses
                 ? Center(
@@ -197,8 +222,33 @@ class _UserHomePageState extends State<UserHomePage> {
                             itemBuilder: (context, index) {
                               return Card(
                                 child: ListTile(
+                                  onTap: () async {
+                                    final data = await Services.postData({
+                                      'bus_id': filteredBuses[index]['bus_id']
+                                    }, 'view_location.php');
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => BusView(
+                                            busId: filteredBuses[index]
+                                                ['bus_id'],
+                                            issue:  data.last['issue']??'',
+                                          ),
+                                        ));
+                                  },
                                   title: Text(filteredBuses[index]['name']),
-                                  subtitle: Text('KL 76 X 1111'),
+                                  subtitle: FutureBuilder(
+                                      future: viewIssue(filteredBuses[index]['bus_id']),
+                                      builder: (context, snap) {
+                                        if (!snap.hasData) {
+                                          return Text('...');
+                                        } else {
+                                          return Text(
+                                            snap.data,
+                                            style: TextStyle(color: Colors.red),
+                                          );
+                                        }
+                                      }),
                                   trailing: Column(
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
@@ -244,10 +294,10 @@ class _UserHomePageState extends State<UserHomePage> {
 
   Future<dynamic> getAllBusList() async {
     await Future.delayed(Duration(seconds: 2));
-    allBuses = Constants.dummyBuses;
-    // allBuses = await Services.getData('all_buses.php');
+    // allBuses = Constants.dummyBuses;
+    allBuses = await Services.getData('all_bus_list.php');
 
-    filteredBuses = allBuses;
+    filteredBuses = allBuses.first['message']=='Failed to View'?[]:allBuses;
     setState(() {});
     return filteredBuses;
   }
@@ -278,26 +328,34 @@ class _UserHomePageState extends State<UserHomePage> {
         .where(
           (bus) =>
               ((double.parse(bus['from'].split(',').first)
+                          .round()
                           .toStringAsFixed(accuracy) ==
                       double.parse(fromCoordinates.split(',').first)
+                          .round()
                           .toStringAsFixed(accuracy)) &&
                   (double.parse(bus['from'].split(',')[1])
+                          .round()
                           .toStringAsFixed(accuracy) ==
                       double.parse(fromCoordinates.split(',')[1])
+                          .round()
                           .toStringAsFixed(accuracy))) &&
               ((double.parse(bus['to'].split(',').first)
+                          .round()
                           .toStringAsFixed(accuracy) ==
                       double.parse(toCoordinates.split(',').first)
+                          .round()
                           .toStringAsFixed(accuracy)) &&
                   (double.parse(bus['to'].split(',')[1])
+                          .round()
                           .toStringAsFixed(accuracy) ==
                       double.parse(toCoordinates.split(',')[1])
+                          .round()
                           .toStringAsFixed(accuracy))),
         )
         .toList();
-        if(filteredBuses.length<1){
-          Fluttertoast.showToast(msg: 'try adjusting location accuracy');
-        }
+    if (filteredBuses.length < 1) {
+      Fluttertoast.showToast(msg: 'try adjusting location accuracy');
+    }
     setState(() {
       fetchingBuses = false;
     });
@@ -314,6 +372,15 @@ class _UserHomePageState extends State<UserHomePage> {
         'label': 'destination',
       }
     ];
+  }
+
+   Future<dynamic> viewIssue(String busId)async{
+    final data =
+        await Services.postData({'bus_id': busId}, 'view_issue.php');
+        if(data.first['message']!='Failed to View'){
+    return data.last['issue'];}else{
+      return '';
+    }
   }
 
   fetchLocation(String fromOrTo) async {

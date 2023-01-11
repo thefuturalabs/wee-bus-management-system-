@@ -33,22 +33,25 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.amber,
         primarySwatch: Colors.blue,
       ),
-      home:UserHomePage()
-      //  FutureBuilder(
-      //     future: getUserType(),
-      //     builder: (context, snap) {
-      //       if (!snap.hasData) {
-      //         return LoginPage();
-      //       } else if (snap.data == 'rto') {
-      //         return RtoHomepage();
-      //       } else if(snap.data=='facility'){
-      //         return FacilityHomepage();
-      //       }else if(snap.data=='driver'){
-      //         return DriverHomepage();
-      //       }else{
-      //         return LoginPage();
-      //       }
-      //     }),
+      home:
+      // UserHomePage()
+       FutureBuilder(
+          future: getUserType(),
+          builder: (context, snap) {
+            if (!snap.hasData) {
+              return LoginPage();
+            } else if (snap.data == 'rto') {
+              return RtoHomepage();
+            } else if(snap.data=='facility'){
+              return FacilityHomepage();
+            }else if(snap.data=='driver'){
+              return DriverHomepage();
+            }else if(snap.data=='user'){
+              return UserHomePage();
+            }else{
+              return LoginPage();
+            }
+          }),
     );
   }
 }

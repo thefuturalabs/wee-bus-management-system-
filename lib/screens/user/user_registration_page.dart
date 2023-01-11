@@ -9,14 +9,14 @@ import 'package:wee/screens/login_page.dart';
 import 'package:wee/screens/rto/rto_homepage.dart';
 import 'package:wee/screens/user/user_home_page.dart';
 
-class RtoRegistraionPage extends StatefulWidget {
-  RtoRegistraionPage({super.key});
+class UserRegistraionPage extends StatefulWidget {
+  UserRegistraionPage({super.key});
   // UserType user;
   @override
-  State<RtoRegistraionPage> createState() => _CommonRegistrationPageState();
+  State<UserRegistraionPage> createState() => _CommonRegistrationPageState();
 }
 
-class _CommonRegistrationPageState extends State<RtoRegistraionPage> {
+class _CommonRegistrationPageState extends State<UserRegistraionPage> {
   final scController = ScrollController();
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -28,39 +28,28 @@ class _CommonRegistrationPageState extends State<RtoRegistraionPage> {
   File? pickedImage;
 
   signUp() async {
-    if (pickedImage != null) {
-      final data = await Services.postWithIamge(
-          endPoint: 'user_register.php',
-          params: {
+    
+      final data = await Services.postData({
             'name': nameController.text,
             'email': emailController.text,
             'mobile': phoneController.text,
             'username': usernameController.text,
             'password': passwordController.text,
             'place': placeController.text,
-          },
-          image: pickedImage!,
-          imageParameter: 'f1');
+          }, 'user_register.php');
       if (data['result'] == 'done') {
         final spref = await SharedPreferences.getInstance();
         spref.setString('userId', data['user_id']);
         spref.setString('type', 'user');
          
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (_) => UserHomePage(),
           ),
         );
       }
-    } else {
-      Fluttertoast.showToast(msg: 'pick image');
-    }
-  }
-
-  getImage() async {
-    pickedImage = await Services.pickImage(context);
-    setState(() {});
+    
   }
 
   @override
@@ -193,24 +182,24 @@ class _CommonRegistrationPageState extends State<RtoRegistraionPage> {
                         ),
                       ),
                     ),
-                    Row(
-                      children: [
-                        if (pickedImage != null)
-                          SizedBox(
-                            height: 50,
-                            width: 50,
-                            child: Image.file(pickedImage!),
-                          ),
-                        if (pickedImage != null)
-                          Expanded(
-                              child: Text(pickedImage!.path,
-                                  overflow: TextOverflow.fade)),
-                        IconButton(
-                          icon: Icon(Icons.image),
-                          onPressed: getImage,
-                        )
-                      ],
-                    ),
+                    // Row(
+                    //   children: [
+                    //     if (pickedImage != null)
+                    //       SizedBox(
+                    //         height: 50,
+                    //         width: 50,
+                    //         child: Image.file(pickedImage!),
+                    //       ),
+                    //     if (pickedImage != null)
+                    //       Expanded(
+                    //           child: Text(pickedImage!.path,
+                    //               overflow: TextOverflow.fade)),
+                    //     IconButton(
+                    //       icon: Icon(Icons.image),
+                    //       onPressed: getImage,
+                    //     )
+                    //   ],
+                    // ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       child: TextFormField(
