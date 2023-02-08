@@ -50,26 +50,35 @@ class _BusStatusScreenState extends State<BusStatusScreen> {
   }
 
   stopBus() async {
-    start = false;
     String uid = await Services.getUserId() ?? '2';
     LocationData loc = await Location().getLocation();
-    Services.postData({
+    final data = await Services.postData({
       'bus_id': widget.busId,
       'location': '${loc.latitude},${loc.longitude}',
       'driver_id': uid,
     }, 'stop_bus.php');
+    if (data['result'] == 'done') {
+      setState(() {
+        start = false;
+      });
+      Fluttertoast.showToast(msg: 'Bus stopped');
+    }
   }
 
   startBus() async {
-    start = true;
     String uid = await Services.getUserId() ?? '2';
     LocationData loc = await Location().getLocation();
-    Services.postData({
+    final data = await Services.postData({
       'bus_id': widget.busId,
       'location': '${loc.latitude},${loc.longitude}',
       'driver_id': uid,
     }, 'start_bus.php');
-
+    if (data['result'] == 'done') {
+      setState(() {
+        start = true;
+      });
+      Fluttertoast.showToast(msg: 'Bus started');
+    }
     updateLocation();
   }
 
@@ -94,12 +103,17 @@ class _BusStatusScreenState extends State<BusStatusScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
                     padding: EdgeInsets.all(2),
-                    color: issue == 'start' ? Colors.white : Colors.transparent,
+                    color: start ? Colors.white : Colors.transparent,
                     child: MaterialButton(
-                        color: Colors.green,
-                        onPressed: startBus,
-                        child: SizedBox(
-                            height: 100, child: Center(child: Text('START')))),
+                      color: Colors.green,
+                      onPressed: startBus,
+                      child: SizedBox(
+                        height: 100,
+                        child: Center(
+                          child: Text('START'),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -108,13 +122,18 @@ class _BusStatusScreenState extends State<BusStatusScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
                     padding: EdgeInsets.all(2),
-                    color: issue == 'stop' ? Colors.white : Colors.transparent,
+                    color: !start ? Colors.white : Colors.transparent,
                     child: MaterialButton(
-                        elevation: 5,
-                        color: Colors.red,
-                        onPressed: () {},
-                        child: SizedBox(
-                            height: 100, child: Center(child: Text('STOP')))),
+                      elevation: 5,
+                      color: Colors.red,
+                      onPressed: stopBus,
+                      child: const SizedBox(
+                        height: 100,
+                        child: Center(
+                          child: Text('STOP'),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),

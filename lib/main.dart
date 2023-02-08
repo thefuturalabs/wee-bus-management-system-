@@ -4,10 +4,8 @@ import 'package:wee/screens/driver/driver_homepage.dart';
 import 'package:wee/screens/facility/facility_homepage.dart';
 import 'package:wee/screens/login_page.dart';
 import 'package:wee/screens/rto/rto_homepage.dart';
-import 'package:wee/screens/rto/rto_registration_page.dart';
 import 'package:wee/screens/user/user_home_page.dart';
 // import 'package:wee/screens/user/user_login_page.dart';
-import 'package:wee/test_page.dart';
 
 void main() {
   runApp(const MyApp());
