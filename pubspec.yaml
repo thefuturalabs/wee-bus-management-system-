@@ -46,7 +46,13 @@ dependencies:
   intl: ^0.18.0
   location: ^4.4.0
 
+flutter_icons:
+  android: "launcher_icon"
+  image_path: "assets/Mjesto.png"
+  min_sdk_android: 21
+
 dev_dependencies:
+  flutter_launcher_icons: ^0.11.0
   flutter_test:
     sdk: flutter
 
@@ -69,8 +75,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
