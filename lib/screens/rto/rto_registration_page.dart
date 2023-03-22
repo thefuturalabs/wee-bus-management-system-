@@ -44,7 +44,7 @@ class _CommonRegistrationPageState extends State<RtoRegistraionPage> {
         final spref = await SharedPreferences.getInstance();
         spref.setString('userId', data['rto_id']);
         spref.setString('type', 'rto');
-         Fluttertoast.showToast(msg: 'You need admin approval for Login');
+        Fluttertoast.showToast(msg: 'You need admin approval for Login');
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -234,7 +234,16 @@ class _CommonRegistrationPageState extends State<RtoRegistraionPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text('Already have an account?'),
-                        TextButton(onPressed: () {}, child: Text('Sign in'))
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => LoginPage(),
+                                ),
+                              );
+                            },
+                            child: Text('Sign in'))
                       ],
                     )
                   ],

@@ -6,8 +6,8 @@ enum UserType {
 }
 
 class Constants {
-  static String baseUrl = 'http://192.168.29.7/wee-bus-management-system--master/api/';
-  static String imageUrl = 'http://192.168.29.7/wee-bus-management-system--master/img/';
+  static String baseUrl = 'http://192.168.68.102/wee-bus-management-system-/api/';
+  static String imageUrl = 'http://192.168.68.102/wee-bus-management-system-/images/';
 
   static List dummyBuses = [
     {

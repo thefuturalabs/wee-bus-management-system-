@@ -48,7 +48,9 @@ class _BusRequestListState extends State<BusRequestList> {
         builder: (context, snap) {
           if (!snap.hasData) {
             return Center(child: CircularProgressIndicator());
-          } else {
+          } else if(snap.data.first['message']=='Failed to View'){
+            return Center(child: Text('No Bus Requests yet'));
+          }else{
             return ListView.builder(
                 itemCount: snap.data.length,
                 itemBuilder: (context, index) {

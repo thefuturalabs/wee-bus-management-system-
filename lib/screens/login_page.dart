@@ -127,39 +127,41 @@ class _LoginPageState extends State<LoginPage> {
         );
       } else {
         final data = await Services.postData({
-        'username': usernameController.text,
-        'password': passwordController.text,
-      }, 'driver_login.php');
+          'username': usernameController.text,
+          'password': passwordController.text,
+        }, 'driver_login.php');
         if (data['message'] == "User Successfully LoggedIn") {
           final spref = await SharedPreferences.getInstance();
           spref.setString('userId', data['driver_id']);
           spref.setString('type', 'driver');
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (_) => DriverHomepage(),
             ),
           );
-        }else{
+        } else {
           final data = await Services.postData({
-        'username': usernameController.text,
-        'password': passwordController.text,
-      }, 'user_login.php');
-         if (data['message'] == "User Successfully LoggedIn") {
-          final spref = await SharedPreferences.getInstance();
-          spref.setString('userId', data['user_id']);
-          spref.setString('type', 'user');
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => UserHomePage(),
-            ),
-          );
-        } 
+            'username': usernameController.text,
+            'password': passwordController.text,
+          }, 'user_login.php');
+          if (data['message'] == "User Successfully LoggedIn") {
+            final spref = await SharedPreferences.getInstance();
+            spref.setString('userId', data['user_id']);
+            spref.setString('type', 'user');
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (_) => UserHomePage(),
+              ),
+            );
+          }
         }
       }
     }
   }
+
+  final fkey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -203,53 +205,62 @@ class _LoginPageState extends State<LoginPage> {
                   )),
               child: Padding(
                 padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    const Text(
-                      'login',
-                      style: TextStyle(
-                          color: Color.fromARGB(255, 67, 67, 67),
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    TextFormField(
-                      controller: usernameController,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'enter username';
-                        }
-                      },
-                      decoration: InputDecoration(
-                        label: Text('username'),
-                        border: OutlineInputBorder(),
+                child: Form(
+                  key: fkey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      const Text(
+                        'login',
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 67, 67, 67),
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
                       ),
-                    ),
-                    TextFormField(
-                      controller: passwordController,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'enter password';
-                        }
-                      },
-                      decoration: InputDecoration(
-                        label: Text('password'),
-                        border: OutlineInputBorder(),
+                      const SizedBox(
+                        height: 30,
                       ),
-                    ),
-                    ElevatedButton(onPressed: login, child: Text('Login')),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('Do not have an account?'),
-                        TextButton(
-                            onPressed: signUpDialog, child: Text('Sign up'))
-                      ],
-                    )
-                  ],
+                      TextFormField(
+                        controller: usernameController,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'enter username';
+                          }
+                        },
+                        decoration: InputDecoration(
+                          label: Text('username'),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      TextFormField(
+                        controller: passwordController,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'enter password';
+                          }
+                        },
+                        decoration: InputDecoration(
+                          label: Text('password'),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      ElevatedButton(
+                          onPressed: () {
+                            if (fkey.currentState!.validate()) {
+                              login();
+                            }
+                          },
+                          child: Text('Login')),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Do not have an account?'),
+                          TextButton(
+                              onPressed: signUpDialog, child: Text('Sign up'))
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),

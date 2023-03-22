@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wee/Services/services.dart';
+import 'package:wee/screens/facility/facility_profile_page.dart';
 import 'package:wee/screens/login_page.dart';
 
 class FacilityHomepage extends StatefulWidget {
@@ -51,6 +52,9 @@ class _FacilityHomepageState extends State<FacilityHomepage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(onPressed: (){
+          Navigator.push(context, MaterialPageRoute(builder: (_)=>FacilityProfilePage()));
+        }, icon: Icon(Icons.perm_identity)),
         title: Text('Your status'),
         actions: [
           Text(

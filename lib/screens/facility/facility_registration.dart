@@ -41,7 +41,7 @@ class _CommonRegistrationPageState extends State<FacilityRegistration> {
     if (loc == null) {
       place = await Services.getCoordinates(placeController.text);
     } else {
-      place = '${loc!.latitude},${loc!.latitude}';
+      place = '${loc!.latitude},${loc!.longitude}';
     }
     if (pickedImage != null) {
       final data = await Services.postWithIamge(
@@ -288,7 +288,16 @@ class _CommonRegistrationPageState extends State<FacilityRegistration> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text('Already have an account?'),
-                        TextButton(onPressed: () {}, child: Text('Sign in'))
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => LoginPage(),
+                                ),
+                              );
+                            },
+                            child: Text('Sign in'))
                       ],
                     )
                   ],

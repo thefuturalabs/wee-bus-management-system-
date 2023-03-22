@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wee/screens/rto/rto_profile_page.dart';
 
+import '../screens/driver/driver_profile_page.dart';
 import '../screens/login_page.dart';
 
 class DriverDrawer extends StatelessWidget {
@@ -24,7 +25,7 @@ class DriverDrawer extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => RtoProfilePage(),
+                        builder: (_) => DriverProfilePage(),
                       ),
                     );
                   },
