@@ -1,7 +1,7 @@
 <aside class="app-sidebar">
       <br><br><br>
       <ul class="app-menu">
-        <li><a class="app-menu__item active" href="dashboard.php"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">Dashboard</span></a></li>
+        <!-- <li><a class="app-menu__item active" href="dashboard.php"><i class="app-menu__icon fa fa-dashboard"></i><span class="app-menu__label">Dashboard</span></a></li> -->
          
         </li>
         <li><a class="app-menu__item" href="update_credentials.php"><i class="app-menu__icon fa fa-pie-chart"></i><span class="app-menu__label">Update Credentials</span></a></li>

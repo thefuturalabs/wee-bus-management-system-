@@ -7,10 +7,10 @@ $name = $_POST['name'];
 $email = $_POST['email'];
 $phn_no = $_POST['phn_no'];
 $location = $_POST['location'];
-$type = $_POST['type'];
+// $type = $_POST['type'];
 
 
-$query1=mysqli_query($con,"UPDATE `fecility` SET `name`='$name',`email`='$email',`mobile`='$phn_no',`location`='$location',`type`='$type' WHERE login_id='$fecility_id'");
+$query1=mysqli_query($con,"UPDATE `fecility` SET `name`='$name',`email`='$email',`mobile`='$phn_no',`location`='$location' WHERE login_id='$fecility_id'");
 
 
 

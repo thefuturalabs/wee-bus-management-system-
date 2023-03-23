@@ -13,6 +13,7 @@ if ($sql->num_rows > 0) {
 
     $myarray['driver_id'] = $row['login_id'];
     $myarray['name'] = $row['name'];
+    // $myarray['email'] = $row['email'];
     $myarray['mobile'] = $row['mobile'];
     $myarray['licence'] = $row['licence'];
     $myarray['status'] = $row['status'];
