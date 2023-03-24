@@ -1,5 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wee/Services/services.dart';
+import 'package:wee/constants.dart';
 import 'package:wee/screens/driver/driver_homepage.dart';
 import 'package:wee/screens/facility/facility_homepage.dart';
 import 'package:wee/screens/login_page.dart';
@@ -36,6 +41,7 @@ class MyApp extends StatelessWidget {
        FutureBuilder(
           future: getUserType(),
           builder: (context, snap) {
+           Services.checkConnection();
             if (!snap.hasData) {
               return LoginPage();
             } else if (snap.data == 'rto') {

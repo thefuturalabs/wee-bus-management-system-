@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,31 +20,43 @@ class Services {
   }
 
   static Future<String?> getDate(BuildContext context) async {
-    DateTime? pickedDate = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(1990),
-        lastDate: DateTime.now());
-    if (pickedDate != null) {
-      return DateFormat('dd/MM/yyyy').format(pickedDate);
+    try {
+      DateTime? pickedDate = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: DateTime(1990),
+          lastDate: DateTime.now());
+      if (pickedDate != null) {
+        return DateFormat('dd/MM/yyyy').format(pickedDate);
+      }
+    } on Exception catch (error) {
+      Fluttertoast.showToast(msg: 'something went wrong, $error');
     }
   }
 
   static Future<dynamic> postData(Map params, String endPoint) async {
-    Response res = await post(
-      Uri.parse(Constants.baseUrl + endPoint),
-      body: params,
-    );
-    print('response for $endPoint>>${res.body}');
-    return jsonDecode(res.body);
+    try {
+      Response res = await post(
+        Uri.parse(Constants.baseUrl + endPoint),
+        body: params,
+      );
+      print('response for $endPoint>>${res.body}');
+      return jsonDecode(res.body);
+    } on Exception catch (error) {
+      Fluttertoast.showToast(msg: 'something went wrong, $error');
+    }
   }
 
   static getData(String endPoint) async {
-    Response res = await get(
-      Uri.parse(Constants.baseUrl + endPoint),
-    );
-    print('response for $endPoint >> ${res.body}');
-    return jsonDecode(res.body);
+    try {
+      Response res = await get(
+        Uri.parse(Constants.baseUrl + endPoint),
+      );
+      print('response for $endPoint >> ${res.body}');
+      return jsonDecode(res.body);
+    } on Exception catch (error) {
+      Fluttertoast.showToast(msg: 'something went wrong, $error');
+    }
   }
 
   static Future<dynamic> postWithIamge({
@@ -52,26 +65,30 @@ class Services {
     required File image,
     required String imageParameter,
   }) async {
-    var res;
-    var request =
-        MultipartRequest("POST", Uri.parse(Constants.baseUrl + endPoint));
-    params.entries.forEach((element) {
-      request.fields[element.key] = element.value;
-    });
-    // request.fields['user'] = 'someone@somewhere.com';
-    request.files.add(await MultipartFile.fromPath(
-      imageParameter,
-      image.path,
-      // contentType: new MediaType('application', 'x-tar'),
-    ));
-    final response = await request.send();
+    try {
+      var res;
+      var request =
+          MultipartRequest("POST", Uri.parse(Constants.baseUrl + endPoint));
+      params.entries.forEach((element) {
+        request.fields[element.key] = element.value;
+      });
+      // request.fields['user'] = 'someone@somewhere.com';
+      request.files.add(await MultipartFile.fromPath(
+        imageParameter,
+        image.path,
+        // contentType: new MediaType('application', 'x-tar'),
+      ));
+      final response = await request.send();
 
-    if (response.statusCode == 200) print("Uploaded!");
-    final data = await Response.fromStream(response);
-    print('image api response: ${data.body}');
-    res = jsonDecode(data.body);
+      if (response.statusCode == 200) print("Uploaded!");
+      final data = await Response.fromStream(response);
+      print('image api response: ${data.body}');
+      res = jsonDecode(data.body);
 
-    return res;
+      return res;
+    } on Exception catch (error) {
+      Fluttertoast.showToast(msg: 'something went wrong, $error');
+    }
   }
 
   static Future<File?> pickImage(BuildContext context) async {
@@ -122,16 +139,29 @@ class Services {
   }
 
   static Future<String> getPlaceName(String latitude, String longitude) async {
-    final data = await placemarkFromCoordinates(double.parse(latitude), double.parse(longitude));
+    final data = await placemarkFromCoordinates(
+        double.parse(latitude), double.parse(longitude));
     // print(data);
-    print('placename from coordinates $latitude, $longitude>> ${data.first.locality}');
-    return data.first.locality??'unknown place';
+    print(
+        'placename from coordinates $latitude, $longitude>> ${data.first.locality}');
+    return data.first.locality ?? 'unknown place';
   }
 
-  static Future<String> getCoordinates(String placeName)async{
-     final data=await locationFromAddress(placeName);
-     print('coordinates from placename $placeName >> ${data.first.latitude},${data.first.longitude}');
-     return '${data.first.latitude},${data.first.longitude}';
+  static Future<String> getCoordinates(String placeName) async {
+    final data = await locationFromAddress(placeName);
+    print(
+        'coordinates from placename $placeName >> ${data.first.latitude},${data.first.longitude}');
+    return '${data.first.latitude},${data.first.longitude}';
+  }
+
+  static checkConnection() {
+    Socket.connect(Constants.baseUrl.split('/')[2].trim(), 8080,
+            timeout: Duration(seconds: 5))
+        .then((socket) {
+      print("Connection Success");
+      socket.destroy();
+    }).catchError((error) {
+      Fluttertoast.showToast(msg: 'Connection error');
+    });
   }
 }
- 

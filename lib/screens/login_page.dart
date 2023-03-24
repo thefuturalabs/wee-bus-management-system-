@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wee/Services/services.dart';
 import 'package:wee/screens/driver/driver_homepage.dart';
@@ -155,6 +156,8 @@ class _LoginPageState extends State<LoginPage> {
                 builder: (_) => UserHomePage(),
               ),
             );
+          }else{
+            Fluttertoast.showToast(msg: 'something went wrong, ${data['message']}');
           }
         }
       }

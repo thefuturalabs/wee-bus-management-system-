@@ -26,30 +26,32 @@ class _CommonRegistrationPageState extends State<DriverRegistration> {
 
   signUp() async {
     if (pickedImage != null) {
-      final data = await Services.postWithIamge(
-          endPoint: 'driver_register.php',
-          params: {
-            'name': nameController.text,
-            'email': emailController.text,
-            'mobile': phoneController.text,
-            'username': usernameController.text,
-            'password': passwordController.text,
-            'district': placeController.text,
-          },
-          image: pickedImage!,
-          imageParameter: 'f1');
-      if (data['result'] == 'done') {
-        final spref = await SharedPreferences.getInstance();
-        // spref.setString('userId', data['rto_id']);
-        // spref.setString('type', 'rto');
-         Fluttertoast.showToast(msg: 'You need approval from RTO for login');
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => LoginPage(),
-          ),
-        );
-      }
+      
+        final data = await Services.postWithIamge(
+            endPoint: 'driver_register.php',
+            params: {
+              'name': nameController.text,
+              'email': emailController.text,
+              'mobile': phoneController.text,
+              'username': usernameController.text,
+              'password': passwordController.text,
+              'district': placeController.text,
+            },
+            image: pickedImage!,
+            imageParameter: 'f1');
+        if (data['result'] == 'done') {
+          final spref = await SharedPreferences.getInstance();
+          // spref.setString('userId', data['rto_id']);
+          // spref.setString('type', 'rto');
+          Fluttertoast.showToast(msg: 'You need approval from RTO for login');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => LoginPage(),
+            ),
+          );
+        }
+     
     } else {
       Fluttertoast.showToast(msg: 'pick image');
     }

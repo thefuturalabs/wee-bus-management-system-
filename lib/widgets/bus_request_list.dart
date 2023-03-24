@@ -11,13 +11,14 @@ class BusRequestList extends StatefulWidget {
   State<BusRequestList> createState() => _BusRequestListState();
 }
 
+ String? place;
 class _BusRequestListState extends State<BusRequestList> {
   Future<dynamic> getBusRequestList() async {
     final uid = await Services.getUserId() ?? '2';
     print(uid);
     final rtoPlaces = await Services.getData('district_list.php');
     print(rtoPlaces);
-    final place = (rtoPlaces.firstWhere((e) => e['rto_id'] == uid))['district'];
+     place = (rtoPlaces.firstWhere((e) => e['rto_id'] == uid))['district'];
     print(place);
     print('rto place $place');
     final data = await Services.postData({'district': place}, 'bus_list.php');
@@ -47,8 +48,11 @@ class _BusRequestListState extends State<BusRequestList> {
         future: getBusRequestList(),
         builder: (context, snap) {
           if (!snap.hasData) {
-            return Center(child: CircularProgressIndicator());
-          } else if(snap.data.first['message']=='Failed to View'){
+            if(place==null){
+              return Center(child:Text('No Requests from your District'));
+            }else{
+            return Center(child: CircularProgressIndicator());}
+          } else if(snap.data.first['message']=='Failed to View' ||snap.data.first['message']=='Failed'){
             return Center(child: Text('No Bus Requests yet'));
           }else{
             return ListView.builder(
@@ -68,31 +72,35 @@ class _BusRequestListState extends State<BusRequestList> {
                       subtitle: Row(
                         children: [
                           // Text('from '),
-                          FutureBuilder(
-                              future: Services.getPlaceName(  
-                                  
-                                      snap.data[index]['from'].split(',')[0],
-                                  
-                                      snap.data[index]['from'].split(',')[1]),
-                              builder: (context, snap) {
-                                if (!snap.hasData) {
-                                  return Text('...');
-                                }
-                                return Text(snap.data!);
-                              }),
+                          Expanded(
+                            child: FutureBuilder(
+                                future: Services.getPlaceName(  
+                                    
+                                        snap.data[index]['from'].split(',')[0],
+                                    
+                                        snap.data[index]['from'].split(',')[1]),
+                                builder: (context, snap) {
+                                  if (!snap.hasData) {
+                                    return Text('...');
+                                  }
+                                  return Text(snap.data!);
+                                }),
+                          ),
                           Text(' - '),
-                          FutureBuilder(
-                              future: Services.getPlaceName(
-                                  
-                                      snap.data[index]['to'].split(',')[0],
-                                  
-                                      snap.data[index]['to'].split(',')[1]),
-                              builder: (context, snap) {
-                                if (!snap.hasData) {
-                                  return Text('...');
-                                }
-                                return Text(snap.data!);
-                              })
+                          Expanded(
+                            child: FutureBuilder(
+                                future: Services.getPlaceName(
+                                    
+                                        snap.data[index]['to'].split(',')[0],
+                                    
+                                        snap.data[index]['to'].split(',')[1]),
+                                builder: (context, snap) {
+                                  if (!snap.hasData) {
+                                    return Text('...');
+                                  }
+                                  return Text(snap.data!);
+                                }),
+                          )
                         ],
                       ),
                       trailing: snap.data[index]['status'] == '0'

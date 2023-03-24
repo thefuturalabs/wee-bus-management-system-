@@ -40,7 +40,9 @@ class _DriverRequestListState extends State<DriverRequestList> {
         builder: (context, snap) {
           if (!snap.hasData) {
             return Center(child: CircularProgressIndicator());
-          } else {
+          } else if(snap.data.first['message']=='Failed'){
+            return Center(child:Text('No data'));
+          }else{
             return ListView.builder(
                 itemCount: snap.data.length,
                 itemBuilder: (context, index) {
