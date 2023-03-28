@@ -62,7 +62,7 @@ class _CommonRegistrationPageState extends State<FacilityRegistration> {
         // spref.setString('userId', data['rto_id']);
         // spref.setString('type', 'rto');
         Fluttertoast.showToast(msg: 'Ask admin for user approval');
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (_) => LoginPage(),

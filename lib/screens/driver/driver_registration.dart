@@ -44,7 +44,7 @@ class _CommonRegistrationPageState extends State<DriverRegistration> {
           // spref.setString('userId', data['rto_id']);
           // spref.setString('type', 'rto');
           Fluttertoast.showToast(msg: 'You need approval from RTO for login');
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (_) => LoginPage(),

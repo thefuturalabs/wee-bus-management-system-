@@ -155,13 +155,22 @@ class Services {
   }
 
   static checkConnection() {
-    Socket.connect(Constants.baseUrl.split('/')[2].trim(), 8080,
+    Socket.connect(Constants.baseUrl.split('/')[2].trim(), 80,
             timeout: Duration(seconds: 5))
         .then((socket) {
       print("Connection Success");
       socket.destroy();
     }).catchError((error) {
-      Fluttertoast.showToast(msg: 'Connection error');
+      Socket.connect(Constants.baseUrl.split('/')[2].trim(), 8080,
+              timeout: Duration(seconds: 5))
+          .then((socket) {
+        print("Connection Success");
+        socket.destroy();
+      }).catchError((error) {
+        Fluttertoast.showToast(
+            msg:
+                'Connection error at ${Constants.baseUrl.split('/')[2].trim()}');
+      });
     });
   }
 }

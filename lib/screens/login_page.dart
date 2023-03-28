@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
                     leading: Icon(Icons.person),
                   ),
                   ListTile(
-                    title: Text('Bus Driver'),
+                    title: Text('Bus Owner'),
                     onTap: () {
                       Navigator.push(
                         context,

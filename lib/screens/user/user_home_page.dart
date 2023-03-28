@@ -232,13 +232,14 @@ class _UserHomePageState extends State<UserHomePage> {
                                           builder: (_) => BusView(
                                             busId: filteredBuses[index]
                                                 ['bus_id'],
-                                            issue:  data.last['issue']??'',
+                                            issue: data.last['issue'] ?? '',
                                           ),
                                         ));
                                   },
                                   title: Text(filteredBuses[index]['name']),
                                   subtitle: FutureBuilder(
-                                      future: viewIssue(filteredBuses[index]['bus_id']),
+                                      future: viewIssue(
+                                          filteredBuses[index]['bus_id']),
                                       builder: (context, snap) {
                                         if (!snap.hasData) {
                                           return Text('...');
@@ -295,9 +296,12 @@ class _UserHomePageState extends State<UserHomePage> {
   Future<dynamic> getAllBusList() async {
     await Future.delayed(Duration(seconds: 2));
     // allBuses = Constants.dummyBuses;
-    allBuses = await Services.getData('all_bus_list.php');
+    allBuses = (await Services.getData('all_bus_list.php') as List)
+        .where((element) => element['status'] == '1')
+        .toList();
 
-    filteredBuses = allBuses.first['message']=='Failed to View'?[]:allBuses;
+    filteredBuses =
+        allBuses.first['message'] == 'Failed to View' ? [] : allBuses;
     setState(() {});
     return filteredBuses;
   }
@@ -374,11 +378,11 @@ class _UserHomePageState extends State<UserHomePage> {
     ];
   }
 
-   Future<dynamic> viewIssue(String busId)async{
-    final data =
-        await Services.postData({'bus_id': busId}, 'view_issue.php');
-        if(data.first['message']!='Failed to View'){
-    return data.last['issue'];}else{
+  Future<dynamic> viewIssue(String busId) async {
+    final data = await Services.postData({'bus_id': busId}, 'view_issue.php');
+    if (data.first['message'] != 'Failed to View') {
+      return data.last['issue'];
+    } else {
       return '';
     }
   }

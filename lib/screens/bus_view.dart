@@ -64,7 +64,7 @@ class _BusViewState extends State<BusView> {
             if (!globalSnap.hasData) {
               return const Center(child: CircularProgressIndicator());
             } else {
-              print('????????????????????${globalSnap.data}');
+              print('????????????????${globalSnap.data}');
               return Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -90,8 +90,10 @@ class _BusViewState extends State<BusView> {
                       ),
 
                       Stepper(
+                        
                         steps: [
-                          Step(
+                          Step(isActive: false,
+                          
                             title: FutureBuilder(
                                 future: Services.getPlaceName(
                                     globalSnap.data['from'].split(',')[0],
